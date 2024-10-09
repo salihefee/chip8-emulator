@@ -100,7 +100,7 @@ int chip8Machine::loadProgram(char* rom) {
 void chip8Machine::executeOpcode(unsigned short opcode) {
     unsigned char X = (opcode & 0x0F00) >> 8;
     unsigned char Y = (opcode & 0x00F0) >> 4;
-
+    unsigned char NN = (opcode & 0x00FF);
     // Decode opcode
     switch (opcode & 0xF000) {
     case 0x0000:
@@ -132,7 +132,6 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
         break;
 
     case 0x3000: {// Skip the next instruction if VX equals NN 
-        unsigned char NN = (opcode & 0x00FF);
         if (V[X] == NN) {
             pc += 2;
         }
@@ -141,7 +140,6 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
     }
 
     case 0x4000: { // Skip the next instruction if VX does not equal NN
-        unsigned char NN = (opcode & 0x00FF);
         if (V[X] != NN)
             pc += 2;
         pc += 2;
@@ -155,14 +153,12 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
         break;
 
     case 0x6000: { // Sets VX to NN
-        unsigned char NN = (opcode & 0x00FF);
         V[X] = NN;
         pc += 2;
         break;
     }
 
     case 0x7000: { // Adds NN to VX (carry flag is not changed)
-        unsigned char NN = (opcode & 0x00FF);
         V[X] += NN;
         pc += 2;
         break;
