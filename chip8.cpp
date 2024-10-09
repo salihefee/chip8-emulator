@@ -3,6 +3,7 @@
 #include <fstream>
 #include <iostream>
 #include <chrono>
+#include <random>
 
 // Define the CHIP-8 fontset
 unsigned char chip8Fontset[80] = {
@@ -24,7 +25,11 @@ unsigned char chip8Fontset[80] = {
   0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
-int chip8Machine::initialize(char* rom) {
+random_device rd;
+mt19937 gen(rd());
+uniform_int_distribution<> dis(0, 255);
+
+int chip8Machine::initialize(const char* rom) {
     pc = 0x200;
     opcode = 0;
     I = 0;
@@ -47,14 +52,14 @@ int chip8Machine::initialize(char* rom) {
     draw_flag = 0;
 
     // Seed the random number generator with the current epoch time
-    auto seed = chrono::system_clock::now().time_since_epoch().count();
-    srand(seed);
+    // auto seed = chrono::system_clock::now().time_since_epoch().count();
+    // srand(seed);
     return 1;
 }
 
 void chip8Machine::emulationCycle() {
     opcode = memory[pc] << 8 | memory[pc + 1];
-    cout << hex << opcode << endl;
+    // cout << hex << opcode << endl; // For debugging
     executeOpcode(opcode);
 }
 
@@ -75,7 +80,7 @@ void chip8Machine::loadFontset() {
     }
 }
 
-int chip8Machine::loadProgram(char* rom) {
+int chip8Machine::loadProgram(const char* rom) {
     ifstream program;
     program.open(rom, ios::binary);
 
@@ -85,12 +90,12 @@ int chip8Machine::loadProgram(char* rom) {
     program.seekg(0, ios::end);
     streampos file_size = program.tellg();
     program.seekg(0, ios::beg);
-    size_t size = static_cast<size_t>(file_size);
+    auto size = static_cast<long>(file_size);
 
     vector<char> buffer(size);
     program.read(buffer.data(), size);
 
-    for (unsigned short program_ptr = 0x200; program_ptr < 0x200 + size; program_ptr++) {
+    for (long program_ptr = 0x200; program_ptr < 0x200 + size; program_ptr++) {
         memory[program_ptr] = buffer[program_ptr - 0x200];
     }
 
@@ -224,6 +229,8 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
             V[X] <<= 1;
             pc += 2;
             break;
+        default:
+            printf("Unknown opcode [0x0000]: 0x%X\n", opcode);
         }
         break;
 
@@ -243,18 +250,16 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
         break;
 
     case 0xC000: // Sets VX to the result of a bitwise and operation on a random number (Typically: 0 to 255) and NN
-        V[X] = (rand() % 256) & (opcode & 0x00FF);
+        V[X] = dis(gen) & (opcode & 0x00FF);
         pc += 2;
         break;
 
     case 0xD000: { // Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each x of 8 pixels is read as bit-coded starting from memory location I; I value does not change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that does not happen.[24]
         V[0xF] = 0;
-        unsigned char pixel;
-        unsigned int index = V[Y] * 64 + V[X];
         unsigned short height = opcode & 0x000F;
 
-        for (unsigned char yOffset = 0; yOffset < height; yOffset++) {
-            pixel = memory[I + yOffset];
+        for (unsigned short yOffset = 0; yOffset < height; yOffset++) {
+            unsigned char pixel = memory[I + yOffset];
             for (unsigned char xOffset = 0; xOffset < 8; xOffset++) {
                 if ((pixel & (0x80 >> xOffset)) != 0) {
                     unsigned int screenIndex = ((V[Y] + yOffset) % 32) * 64 + ((V[X] + xOffset) % 64);
@@ -289,6 +294,8 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
             }
             pc += 2;
             break;
+        default:
+            printf("Unknown opcode [0x0000]: 0x%X\n", opcode);
         }
 
         break;
@@ -359,8 +366,11 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
             }
             pc += 2;
             break;
-
+        default:
+            printf("Unknown opcode [0x0000]: 0x%X\n", opcode);
         }
         break;
+    default:
+        printf("Unknown opcode [0x0000]: 0x%X\n", opcode);
     }
 }

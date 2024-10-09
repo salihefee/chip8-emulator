@@ -36,9 +36,9 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    const int screenWidth = 1024;
-    const int screenHeight = 512;
-    const int scale = screenHeight / 32;
+    constexpr int screenWidth = 1024;
+    constexpr int screenHeight = 512;
+    constexpr int scale = screenHeight / 32;
     InitWindow(screenWidth, screenHeight, "CHIP-8 Emulator");
 
     SetTargetFPS(60);

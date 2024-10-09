@@ -11,27 +11,27 @@ extern unsigned char chip8Fontset[80];
 
 class chip8Machine {
 public:
-    unsigned char screen[64 * 32];
-    unsigned char key[16];
-    unsigned char draw_flag;
+    unsigned char screen[64 * 32] = {0};
+    unsigned char key[16] = {0};
+    unsigned char draw_flag = 0;
 
-    int initialize(char* rom);
+    int initialize(const char* rom);
     void emulationCycle();
     void updateTimers();
 
 private:
-    unsigned char delay_timer;
-    unsigned char sound_timer;
-    unsigned char memory[4096];
-    unsigned char V[16];
-    unsigned short I;
-    unsigned short pc;
-    unsigned short stack[16];
-    unsigned short sp;
-    unsigned short opcode;
+    unsigned char delay_timer = 0;
+    unsigned char sound_timer = 0;
+    unsigned char memory[4096] = {0};
+    unsigned char V[16] = {0};
+    unsigned short I = 0;
+    unsigned short pc = 0;
+    unsigned short stack[16] = {0};
+    unsigned short sp = 0;
+    unsigned short opcode = 0;
 
     void loadFontset();
-    int loadProgram(char* rom);
+    int loadProgram(const char* rom);
     void executeOpcode(unsigned short opcode);
 };
 
