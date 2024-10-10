@@ -51,9 +51,6 @@ int chip8Machine::initialize(const char* rom) {
     sound_timer = 0;
     draw_flag = 0;
 
-    // Seed the random number generator with the current epoch time
-    // auto seed = chrono::system_clock::now().time_since_epoch().count();
-    // srand(seed);
     return 1;
 }
 

@@ -6,7 +6,7 @@ using namespace std;
 
 chip8Machine chip8;
 
-// Define key mappings for CHIP-8 keys
+// Key mappings for CHIP-8 keys
 const int keymap[16] = {
     KEY_X,    // 0
     KEY_ONE,  // 1
@@ -23,7 +23,7 @@ const int keymap[16] = {
     KEY_FOUR, // C
     KEY_R,    // D
     KEY_F,    // E
-    KEY_V     // F
+    KEY_V,     // F
 };
 
 int main(int argc, char* argv[]) {
@@ -44,7 +44,10 @@ int main(int argc, char* argv[]) {
     SetTargetFPS(60);
 
     while (!WindowShouldClose()) {
-        // Emulate one cycle
+        if (IsKeyDown(KEY_F1)) {
+            chip8.initialize(argv[1]);
+        }
+
         chip8.emulationCycle();
 
         PollInputEvents();
@@ -58,7 +61,7 @@ int main(int argc, char* argv[]) {
 
         if (chip8.draw_flag) {
             BeginDrawing();
-            ClearBackground(BLACK);  // Clear the screen
+            ClearBackground(BLACK);
             chip8.draw_flag = 0;
             for (int y = 0; y < 32; y++) {
                 for (int x = 0; x < 64; x++) {
