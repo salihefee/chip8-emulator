@@ -56,13 +56,10 @@ int main(int argc, char* argv[]) {
             chip8.key[i] = IsKeyDown(keymap[i]);
         }
 
-        // Update timers
-        chip8.updateTimers();
-
         if (chip8.draw_flag) {
+            chip8.draw_flag = 0;
             BeginDrawing();
             ClearBackground(BLACK);
-            chip8.draw_flag = 0;
             for (int y = 0; y < 32; y++) {
                 for (int x = 0; x < 64; x++) {
                     if (chip8.screen[y * 64 + x] == 1) {

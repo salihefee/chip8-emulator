@@ -5,6 +5,8 @@
 #include <chrono>
 #include <random>
 
+using namespace std;
+
 // Define the CHIP-8 fontset
 unsigned char chip8Fontset[80] = {
   0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
@@ -58,6 +60,7 @@ void chip8Machine::emulationCycle() {
     opcode = memory[pc] << 8 | memory[pc + 1];
     // cout << hex << opcode << endl; // For debugging
     executeOpcode(opcode);
+    updateTimers();
 }
 
 void chip8Machine::updateTimers() {
