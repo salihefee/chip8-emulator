@@ -22,7 +22,8 @@ This project is a CHIP-8 emulator implemented in C++. It uses the Raylib library
 
 - C++11 or higher
 - g++
-- Raylib library
+- make
+- raylib
 
 ### Building the Project
 
@@ -33,10 +34,10 @@ This project is a CHIP-8 emulator implemented in C++. It uses the Raylib library
     cd chip8-emulator
     ```
 
-2. Compile the project using `g++`:
+2. Compile the project using the provided Makefile:
 
     ```sh
-    g++ emulator.cpp chip8.cpp -lraylib -o emulator
+    make
     ```
 
 ## Usage
@@ -44,7 +45,7 @@ This project is a CHIP-8 emulator implemented in C++. It uses the Raylib library
 1. Run the emulator with a CHIP-8 ROM file:
 
     ```sh
-    ./emulator path/to/romfile
+    ./build/emulator path/to/romfile
     ```
 
 2. Use the following keys on your keyboard to control the program:
