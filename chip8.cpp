@@ -44,7 +44,7 @@ int chip8Machine::initialize(const char* rom) {
 
     int loadSuccess = loadProgram(rom);
     if (!loadSuccess) {
-        cerr << "Error: ROM file " << rom << " could not be loaded." << endl;
+        cerr << "Error: ROM file " << rom << " could not be loaded.\n";
         return 0;
     }
     loadFontset();
@@ -58,7 +58,7 @@ int chip8Machine::initialize(const char* rom) {
 
 void chip8Machine::emulationCycle() {
     opcode = memory[pc] << 8 | memory[pc + 1];
-    // cout << hex << opcode << endl; // For debugging
+    // cout << hex << opcode << "\n"; // For debugging
     executeOpcode(opcode);
     updateTimers();
 }
