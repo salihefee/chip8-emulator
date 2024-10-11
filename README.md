@@ -30,7 +30,7 @@ This project is a CHIP-8 emulator implemented in C++. It uses the Raylib library
 1. Clone the repository:
 
     ```sh
-    git clone https://github.com/yourusername/chip8-emulator.git
+    git clone https://github.com/salihefee/chip8-emulator.git
     cd chip8-emulator
     ```
 
