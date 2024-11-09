@@ -26,7 +26,8 @@ const int keymap[16] = {
     KEY_V,     // F
 };
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
     if (argc < 2) {
         cout << "Usage: " << argv[0] << " <path to ROM file>\n";
         return 1;

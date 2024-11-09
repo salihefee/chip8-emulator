@@ -9,29 +9,30 @@ using namespace std;
 
 // Define the CHIP-8 fontset
 unsigned char chip8Fontset[80] = {
-  0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
-  0x20, 0x60, 0x20, 0x20, 0x70, // 1
-  0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
-  0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
-  0x90, 0x90, 0xF0, 0x10, 0x10, // 4
-  0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
-  0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
-  0xF0, 0x10, 0x20, 0x40, 0x40, // 7
-  0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
-  0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
-  0xF0, 0x90, 0xF0, 0x90, 0x90, // A
-  0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
-  0xF0, 0x80, 0x80, 0x80, 0xF0, // C
-  0xE0, 0x90, 0x90, 0x90, 0xE0, // D
-  0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
-  0xF0, 0x80, 0xF0, 0x80, 0x80  // F
+    0xF0, 0x90, 0x90, 0x90, 0xF0, // 0
+    0x20, 0x60, 0x20, 0x20, 0x70, // 1
+    0xF0, 0x10, 0xF0, 0x80, 0xF0, // 2
+    0xF0, 0x10, 0xF0, 0x10, 0xF0, // 3
+    0x90, 0x90, 0xF0, 0x10, 0x10, // 4
+    0xF0, 0x80, 0xF0, 0x10, 0xF0, // 5
+    0xF0, 0x80, 0xF0, 0x90, 0xF0, // 6
+    0xF0, 0x10, 0x20, 0x40, 0x40, // 7
+    0xF0, 0x90, 0xF0, 0x90, 0xF0, // 8
+    0xF0, 0x90, 0xF0, 0x10, 0xF0, // 9
+    0xF0, 0x90, 0xF0, 0x90, 0x90, // A
+    0xE0, 0x90, 0xE0, 0x90, 0xE0, // B
+    0xF0, 0x80, 0x80, 0x80, 0xF0, // C
+    0xE0, 0x90, 0x90, 0x90, 0xE0, // D
+    0xF0, 0x80, 0xF0, 0x80, 0xF0, // E
+    0xF0, 0x80, 0xF0, 0x80, 0x80  // F
 };
 
 random_device rd;
 mt19937 gen(rd());
 uniform_int_distribution<> dis(0, 255);
 
-int chip8Machine::initialize(const char* rom) {
+int chip8Machine::initialize(const char* rom)
+{
     pc = 0x200;
     opcode = 0;
     I = 0;
@@ -56,14 +57,16 @@ int chip8Machine::initialize(const char* rom) {
     return 1;
 }
 
-void chip8Machine::emulationCycle() {
+void chip8Machine::emulationCycle()
+{
     opcode = memory[pc] << 8 | memory[pc + 1];
     // cout << hex << opcode << "\n"; // For debugging
     executeOpcode(opcode);
     updateTimers();
 }
 
-void chip8Machine::updateTimers() {
+void chip8Machine::updateTimers()
+{
     if (delay_timer > 0) {
         delay_timer--;
     }
@@ -74,13 +77,15 @@ void chip8Machine::updateTimers() {
     }
 }
 
-void chip8Machine::loadFontset() {
+void chip8Machine::loadFontset()
+{
     for (unsigned short charptr = 0; charptr < 80; charptr++) {
         memory[charptr] = chip8Fontset[charptr];
     }
 }
 
-int chip8Machine::loadProgram(const char* rom) {
+int chip8Machine::loadProgram(const char* rom)
+{
     ifstream program;
     program.open(rom, ios::binary);
 
@@ -102,7 +107,8 @@ int chip8Machine::loadProgram(const char* rom) {
     return 1;
 }
 
-void chip8Machine::executeOpcode(unsigned short opcode) {
+void chip8Machine::executeOpcode(unsigned short opcode)
+{
     unsigned char X = (opcode & 0x0F00) >> 8;
     unsigned char Y = (opcode & 0x00F0) >> 4;
     unsigned char NN = (opcode & 0x00FF);
@@ -110,13 +116,13 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
     switch (opcode & 0xF000) {
     case 0x0000:
         switch (opcode & 0x000F) {
-        case 0x0000: // Clear the screen        
+        case 0x0000: // Clear the screen
             fill(begin(screen), end(screen), 0);
             draw_flag = 1;
             pc += 2;
             break;
 
-        case 0x000E: // Return from subroutine          
+        case 0x000E: // Return from subroutine
             pc = stack[--sp];
             pc += 2;
             break;
@@ -136,7 +142,8 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
         pc = opcode & 0x0FFF;
         break;
 
-    case 0x3000: {// Skip the next instruction if VX equals NN 
+    case 0x3000:
+    { // Skip the next instruction if VX equals NN
         if (V[X] == NN) {
             pc += 2;
         }
@@ -144,7 +151,8 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
         break;
     }
 
-    case 0x4000: { // Skip the next instruction if VX does not equal NN
+    case 0x4000:
+    { // Skip the next instruction if VX does not equal NN
         if (V[X] != NN)
             pc += 2;
         pc += 2;
@@ -157,13 +165,15 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
         pc += 2;
         break;
 
-    case 0x6000: { // Sets VX to NN
+    case 0x6000:
+    { // Sets VX to NN
         V[X] = NN;
         pc += 2;
         break;
     }
 
-    case 0x7000: { // Adds NN to VX (carry flag is not changed)
+    case 0x7000:
+    { // Adds NN to VX (carry flag is not changed)
         V[X] += NN;
         pc += 2;
         break;
@@ -254,7 +264,8 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
         pc += 2;
         break;
 
-    case 0xD000: { // Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each x of 8 pixels is read as bit-coded starting from memory location I; I value does not change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that does not happen.[24]
+    case 0xD000:
+    { // Draws a sprite at coordinate (VX, VY) that has a width of 8 pixels and a height of N pixels. Each x of 8 pixels is read as bit-coded starting from memory location I; I value does not change after the execution of this instruction. As described above, VF is set to 1 if any screen pixels are flipped from set to unset when the sprite is drawn, and to 0 if that does not happen.[24]
         V[0xF] = 0;
         unsigned short height = opcode & 0x000F;
 
@@ -307,7 +318,8 @@ void chip8Machine::executeOpcode(unsigned short opcode) {
             pc += 2;
             break;
 
-        case 0x000A: {// A key press is awaited, and then stored in VX (blocking operation, all instruction halted until next key event)
+        case 0x000A:
+        { // A key press is awaited, and then stored in VX (blocking operation, all instruction halted until next key event)
             int key_pressed = 0;
 
             for (int i = 0; i < 16; i++) {
